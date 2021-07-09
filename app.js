@@ -2,6 +2,8 @@
 
 const express = require("express");
 
+const _ = require("lodash")
+
 const ejs = require("ejs");
 
 const posts = [];
@@ -21,7 +23,7 @@ app.use(express.static("public"));
 app.get("/", function(req, res){
 
 
-  res.render("home", {startingContent: homeVar[0]});
+  res.render("home", {startingContent: homeVar[0], posts: posts});
 })
 
 
@@ -49,10 +51,25 @@ app.post("/compose", function(req, res){
       body: req.body.postBody
 
     }
-    posts.push(post)
-    console.log(posts);
+    posts.push(post);
     res.redirect("/");
 })
+
+app.get("/posts/:postName", function(req, res){
+  const requestedTitle = _.lowerCase(req.params.postName);
+
+ 
+  posts.forEach(function(blog){
+
+      const storedTitle = _.lowerCase(blog.title);
+
+      if (storedTitle === requestedTitle){
+        res.render("post", {title: blog.title, post: blog.body});
+      }
+  })
+  
+})
+
 
 
 
